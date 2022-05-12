@@ -18,6 +18,13 @@ const initialStories = [
   }
 ];
 
+const getAsyncStories = () => 
+  new Promise(resolve => 
+    setTimeout(
+      () => resolve({data: {stories: initialStories}}), 2000
+    )
+    );
+
 //使用缓存记录上一次在搜索框里留下的内容
 //利用UseState来决定搜索框要呈现的值
 //利用UseEffect来完成事件触发和更新
@@ -37,7 +44,13 @@ const App = () =>{
   
   const [searchTerm,setSearchTerm] = useSemiPersistentState('search','React');
   //useState有两个值，一个用来read，一个用来update
-  const [stories, setStories] = React.useState(initialStories);
+  const [stories, setStories] = React.useState([]);
+
+  React.useEffect(() => {
+    getAsyncStories().then(result => {
+      setStories(result.data.stories);
+    });
+  },[]);
 
   //移除了一个item，不等于item.objectID的项目都会被保留
   const handleRemoveStory = item => {
